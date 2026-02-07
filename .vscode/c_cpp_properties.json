@@ -1,0 +1,44 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "/Users/anantasak/Documents/Arduino/BBS_BUFFER_A/include",
+                "/Users/anantasak/Documents/Arduino/BBS_BUFFER_A/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/Users/anantasak/Documents/Arduino/BBS_BUFFER_A/include",
+                    "/Users/anantasak/Documents/Arduino/BBS_BUFFER_A/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60119",
+                "CH32V003F4",
+                "CH32V00X",
+                "CH32V00x",
+                "CH32V003",
+                ""
+            ],
+            "cStandard": "gnu99",
+            "cppStandard": "gnu++17",
+            "compilerPath": "/Users/anantasak/.platformio/packages/toolchain-riscv/bin/riscv-none-embed-gcc",
+            "compilerArgs": [
+                "-msmall-data-limit=0",
+                "-msave-restore",
+                "-march=rv32ecxw",
+                "-mabi=ilp32e",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}

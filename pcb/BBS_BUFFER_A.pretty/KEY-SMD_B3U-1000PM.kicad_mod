@@ -1,0 +1,233 @@
+(footprint "KEY-SMD_B3U-1000PM"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(uuid "ba9a516c-b3d6-46f8-913c-78066b466d61")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "5b585ffa-0365-489f-89ae-844aefc5368a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3a350941-8314-49a3-8dde-4a05f20a6717")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "36ad60bf-d881-4871-b9b2-0ab8d404473f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "JLC_3DModel_Q" "4a122f942e8c428cab657e97b0b9ae70"
+		(at 0 0 0)
+		(layer "Cmts.User")
+		(hide yes)
+		(uuid "88195fe0-962c-474e-820b-2d20dfc7f0bb")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "JLC_3D_Size" "4 2.5"
+		(at 0 0 0)
+		(layer "Cmts.User")
+		(hide yes)
+		(uuid "f5c91894-4ed7-4887-90a7-aab1a88ff1dc")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(fp_line
+		(start -2.036 -1.65)
+		(end 2.164 -1.65)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "c32ed68f-860b-4996-be70-52ce41a5cd98")
+	)
+	(fp_line
+		(start -2.036 -1.05)
+		(end -2.036 -1.65)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "1d1debf4-9224-45bf-a6bd-2836aafd6db9")
+	)
+	(fp_line
+		(start -2.036 1.05)
+		(end -2.036 1.65)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "7a425fed-4cc6-450e-89ff-6cb5f4d9a0ee")
+	)
+	(fp_line
+		(start -2.036 1.65)
+		(end 2.164 1.65)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "700ef466-5f84-4e3a-8f9e-0e65f85c289d")
+	)
+	(fp_line
+		(start 2.164 -1.65)
+		(end 2.164 -1.05)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "6eb5ab3a-1211-4f97-93f0-8353e59054e4")
+	)
+	(fp_line
+		(start 2.164 1.65)
+		(end 2.164 1.05)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "2f7e9af6-2a98-42ef-91c6-bcee4309fa3b")
+	)
+	(fp_circle
+		(center 0.014 0)
+		(end 0.7655 0)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "366500c3-b705-4935-85af-55f9fc3b735e")
+	)
+	(fp_line
+		(start -3.086 -1.95)
+		(end -3.086 2)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "Dwgs.User")
+		(uuid "97413605-99fc-4af9-ad54-6ea6755f3172")
+	)
+	(fp_line
+		(start -3.086 2)
+		(end 3.114 2)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "Dwgs.User")
+		(uuid "c642e3b8-53d9-4aa0-8d5e-1dc6b261949e")
+	)
+	(fp_line
+		(start 3.114 -1.95)
+		(end -3.086 -1.95)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "Dwgs.User")
+		(uuid "4b788dad-fcbb-4f33-8928-092ad857ad0c")
+	)
+	(fp_line
+		(start 3.114 2)
+		(end 3.114 -1.95)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "Dwgs.User")
+		(uuid "78a2b814-a391-4154-ab63-b0f38e987b90")
+	)
+	(fp_rect
+		(start -3.236 -1.15)
+		(end 3.264 1.15)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "eb9f7472-7912-4441-b479-e79a4f60e4e0")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "2d0780a2-1fe0-4515-b6a8-60a6952742f4")
+		(effects
+			(font
+				(size 0.5 0.5)
+				(thickness 0.1)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -2.286 0)
+		(size 1.4 1.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "2d84074d-5fad-4e23-8989-28289f52cae0")
+	)
+	(pad "2" smd rect
+		(at 2.314 0)
+		(size 1.4 1.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "4ce3f365-1e77-461f-8e66-a4f61d7d2cc2")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/EASYEDA_MODELS/KEY-SMD_2P-L3.0-W2.5-H1.6-LS4.0.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -0 -0)
+		)
+	)
+)
