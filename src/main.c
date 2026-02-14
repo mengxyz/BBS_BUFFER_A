@@ -15,6 +15,8 @@
 #define BUTTON_DEBOUNCE_MS 20u
 #define BUTTON_LONG_MS 1000u
 #define PWM_USE_PC4 1 // 1 = TIM1 CH4 on PC4 (hardware PWM). 0 = TIM2 ISR on PA1.
+#define PWM_DUTY_MIN_PERCENT 15u // Clamp output duty lower bound (0..100).
+#define PWM_DUTY_MAX_PERCENT 90u // Clamp output duty upper bound (0..100).
 
 #if PWM_USE_PC4
 static void SetupPWM_PC4_10k(void)
@@ -213,10 +215,20 @@ int main()
 #endif
 		uint16_t ccr = (uint16_t)((adj * (uint32_t)(arr + 1)) / (span + 1));
 
-		if (ccr == 0)
-			ccr = 1;
-		if (ccr >= arr)
-			ccr = arr - 1;
+		// Clamp mapped duty to user-defined min/max percentages.
+		uint16_t ccr_min = (uint16_t)(((arr + 1u) * PWM_DUTY_MIN_PERCENT) / 100u);
+		uint16_t ccr_max = (uint16_t)(((arr + 1u) * PWM_DUTY_MAX_PERCENT) / 100u);
+		if (ccr_min == 0)
+			ccr_min = 1;
+		if (ccr_max >= arr)
+			ccr_max = arr - 1;
+		if (ccr_max <= ccr_min)
+			ccr_max = (uint16_t)(ccr_min + 1u);
+
+		if (ccr < ccr_min)
+			ccr = ccr_min;
+		if (ccr > ccr_max)
+			ccr = ccr_max;
 
 		#if PWM_USE_PC4
 		TIM1->CH4CVR = ccr;
