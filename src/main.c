@@ -17,6 +17,9 @@
 #define PWM_USE_PC4 1 // 1 = TIM1 CH4 on PC4 (hardware PWM). 0 = TIM2 ISR on PA1.
 #define PWM_DUTY_MIN_PERCENT 15u // Clamp output duty lower bound (0..100).
 #define PWM_DUTY_MAX_PERCENT 90u // Clamp output duty upper bound (0..100).
+#define WDT_ENABLE 1
+#define WDT_PRESCALER IWDG_Prescaler_64
+#define WDT_RELOAD 625u // ~1s at LSI ~40kHz: 40k/64 = 625Hz.
 
 #if PWM_USE_PC4
 static void SetupPWM_PC4_10k(void)
@@ -160,6 +163,23 @@ static uint8_t ButtonPressed(void)
 	return (GPIOC->INDR & (1 << 1)) ? 0u : 1u;
 }
 
+#if WDT_ENABLE
+static void SetupWDT(void)
+{
+	IWDG->CTLR = IWDG_WriteAccess_Enable;
+	IWDG->PSCR = WDT_PRESCALER;
+	IWDG->RLDR = (WDT_RELOAD & IWDG_RL);
+	while (IWDG->STATR & (IWDG_PVU | IWDG_RVU)) {}
+	IWDG->CTLR = CTLR_KEY_Reload;
+	IWDG->CTLR = CTLR_KEY_Enable;
+}
+
+static inline void FeedWDT(void)
+{
+	IWDG->CTLR = CTLR_KEY_Reload;
+}
+#endif
+
 int main()
 {
 	SystemInit48HSI();
@@ -176,6 +196,9 @@ int main()
 	SetupInput_PC1_Pullup();
 	#endif
 	SetupADC_PA2();
+#if WDT_ENABLE
+	SetupWDT();
+#endif
 	#if USE_CALC
 	calib_data_t calib = { ADC_MIN_DEFAULT, ADC_MAX_DEFAULT };
 	if (!calib_load(&calib) || calib.adc_max <= calib.adc_min)
@@ -266,6 +289,9 @@ int main()
 		pressed_prev = pressed;
 #endif
 
+#if WDT_ENABLE
+		FeedWDT();
+#endif
 		Delay_Ms(5);
 	}
 }
