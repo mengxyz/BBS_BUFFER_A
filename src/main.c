@@ -17,9 +17,12 @@
 #define PWM_USE_PC4 1 // 1 = TIM1 CH4 on PC4 (hardware PWM). 0 = TIM2 ISR on PA1.
 #define PWM_DUTY_MIN_PERCENT 15u // Clamp output duty lower bound (0..100).
 #define PWM_DUTY_MAX_PERCENT 90u // Clamp output duty upper bound (0..100).
-#define WDT_ENABLE 1
+#define WDT_ENABLE 0
 #define WDT_PRESCALER IWDG_Prescaler_64
 #define WDT_RELOAD 625u // ~1s at LSI ~40kHz: 40k/64 = 625Hz.
+#define ADC_DMA_SAMPLES 16u
+
+static volatile uint16_t adc_dma_buf[ADC_DMA_SAMPLES];
 
 #if PWM_USE_PC4
 static void SetupPWM_PC4_10k(void)
@@ -107,37 +110,51 @@ void TIM2_IRQHandler(void)
 }
 #endif
 
-static void SetupADC_PA2(void)
+static void SetupADC_DMA_PA2(void)
 {
-	// Enable GPIOA + ADC clocks.
 	RCC->APB2PCENR |= RCC_IOPAEN | RCC_ADC1EN;
+	RCC->AHBPCENR  |= RCC_DMA1EN;
 
-	// ADC clock prescaler: PCLK2 / 6 (48MHz / 6 = 8MHz)
+	// ADC clock: 48MHz / 4 = 12MHz (max 14MHz)
 	RCC->CFGR0 &= ~RCC_ADCPRE;
-	RCC->CFGR0 |= RCC_ADCPRE_DIV6;
+	RCC->CFGR0 |= RCC_ADCPRE_DIV4;
 
 	// PA2 as analog input.
 	GPIOA->CFGLR &= ~(0xF << (4 * 2));
 	GPIOA->CFGLR |= (GPIO_CNF_IN_ANALOG | GPIO_SPEED_IN) << (4 * 2);
 
-	// Configure ADC for single conversion on channel 0 (PA2 = A0 on SOP-8).
+	// DMA1 Channel1: ADC1->RDATAR -> adc_dma_buf, circular, 16-bit.
+	DMA1_Channel1->CFGR  = 0;
+	DMA1_Channel1->CNTR  = ADC_DMA_SAMPLES;
+	DMA1_Channel1->PADDR = (uint32_t)&ADC1->RDATAR;
+	DMA1_Channel1->MADDR = (uint32_t)adc_dma_buf;
+	DMA1_Channel1->CFGR  =
+		DMA_CFGR1_MINC                    |  // increment memory address
+		DMA_CFGR1_CIRC                    |  // circular: auto-reload CNTR
+		DMA_CFGR1_PSIZE_0                 |  // peripheral 16-bit
+		DMA_CFGR1_MSIZE_0                 |  // memory 16-bit
+		DMA_CFGR1_PL_1 | DMA_CFGR1_PL_0  |  // very high priority
+		DMA_CFGR1_EN;
+
+	// Calibrate before enabling continuous+DMA.
 	ADC1->CTLR1 = 0;
 	ADC1->CTLR2 = ADC_ADON;
-	ADC1->CTLR2 &= ~ADC_EXTSEL;
-	ADC1->CTLR2 |= ADC_ExternalTrigConv_None | ADC_EXTTRIG;
-	ADC1->RSQR1 = 0;
-	ADC1->RSQR2 = 0;
-	ADC1->RSQR3 = ADC_Channel_0;
-
-	// Sample time for channel 0: 73 cycles.
-	ADC1->SAMPTR2 &= ~ADC_SMP0;
-	ADC1->SAMPTR2 |= ADC_SampleTime_73Cycles;
-
-	// Reset and calibrate.
 	ADC1->CTLR2 |= ADC_RSTCAL;
 	while (ADC1->CTLR2 & ADC_RSTCAL) {}
 	ADC1->CTLR2 |= ADC_CAL;
 	while (ADC1->CTLR2 & ADC_CAL) {}
+
+	// Continuous mode + DMA on channel 0, 241-cycle sample time.
+	ADC1->CTLR2 &= ~ADC_EXTSEL;
+	ADC1->CTLR2 |= ADC_ExternalTrigConv_None | ADC_EXTTRIG | ADC_DMA | ADC_CONT;
+	ADC1->RSQR1  = 0;
+	ADC1->RSQR2  = 0;
+	ADC1->RSQR3  = ADC_Channel_0;
+	ADC1->SAMPTR2 &= ~ADC_SMP0;
+	ADC1->SAMPTR2 |= ADC_SampleTime_241Cycles;
+
+	// Start — DMA fills buffer continuously from here.
+	ADC1->CTLR2 |= ADC_SWSTART;
 }
 
 static void SetupInput_PC1_Pullup(void)
@@ -151,11 +168,12 @@ static void SetupInput_PC1_Pullup(void)
 	GPIOC->BSHR = 1 << 1; // pull-up (active low)
 }
 
-static uint16_t ReadADC_PA2(void)
+static uint16_t ReadADC_Average(void)
 {
-	ADC1->CTLR2 |= ADC_SWSTART;
-	while (!(ADC1->STATR & ADC_EOC)) {}
-	return (uint16_t)(ADC1->RDATAR & 0x03FF);
+	uint32_t sum = 0;
+	for (uint8_t i = 0; i < ADC_DMA_SAMPLES; i++)
+		sum += adc_dma_buf[i];
+	return (uint16_t)(sum / ADC_DMA_SAMPLES);
 }
 
 static uint8_t ButtonPressed(void)
@@ -195,7 +213,7 @@ int main()
 	#if USE_CALC
 	SetupInput_PC1_Pullup();
 	#endif
-	SetupADC_PA2();
+	SetupADC_DMA_PA2();
 #if WDT_ENABLE
 	SetupWDT();
 #endif
@@ -212,7 +230,7 @@ int main()
 	
 	while(1)
 	{
-		uint16_t adc_raw = ReadADC_PA2();
+		uint16_t adc_raw = ReadADC_Average();
 		uint16_t adc = adc_raw;
 		#if PWM_USE_PC4
 		uint16_t arr = TIM1->ATRLR;

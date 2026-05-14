@@ -21,6 +21,8 @@
                 ]
             },
             "defines": [
+                "SYSCLK_FREQ_48MHz_HSI=48000000",
+                "SYSCLK_FREQ_48MHZ_HSI=48000000",
                 "PLATFORMIO=60119",
                 "CH32V003F4",
                 "CH32V00X",

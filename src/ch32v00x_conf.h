@@ -33,6 +33,7 @@ void SystemInit(void) __attribute__((used));
 
 // Useful functions
 void SystemInit48HSI( void );
+void SystemInit16HSI( void );
 
 #define UART_BAUD_RATE 115200
 #define OVER8DIV 4

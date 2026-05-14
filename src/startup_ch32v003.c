@@ -150,7 +150,7 @@ void handle_reset()
 void SystemInit48HSI( void )
 {
 	// Values lifted from the EVT.  There is little to no documentation on what this does.
-	RCC->CTLR  = RCC_HSION | RCC_PLLON; 				// Use HSI, but enable PLL.
+	RCC->CTLR |= RCC_HSION | RCC_PLLON; 				// Use HSI, but enable PLL. |= preserves HSITRIM factory cal.
 	RCC->CFGR0 = RCC_HPRE_DIV1 | RCC_PLLSRC_HSI_Mul2;	// PLLCLK = HSI * 2 = 48 MHz; HCLK = SYSCLK = APB1
 	FLASH->ACTLR = FLASH_ACTLR_LATENCY_1;				// 1 Cycle Latency
 	RCC->INTR  = 0x009F0000;                            // Clear PLL, CSSC, HSE, HSI and LSI ready flags.
@@ -159,6 +159,19 @@ void SystemInit48HSI( void )
 	while((RCC->CTLR & RCC_PLLRDY) == 0);														// Wait till PLL is ready
 	RCC->CFGR0 = ( RCC->CFGR0 & ((uint32_t)~(RCC_SW))) | (uint32_t)RCC_SW_PLL;					// Select PLL as system clock source
 	while ((RCC->CFGR0 & (uint32_t)RCC_SWS) != (uint32_t)0x08);									// Wait till PLL is used as system clock source
+}
+
+void SystemInit16HSI( void )
+{
+	// Keep PLL at 48MHz from HSI, then divide HCLK by 3 to get 16MHz system clock.
+	RCC->CTLR |= RCC_HSION | RCC_PLLON;
+	RCC->CFGR0 = RCC_HPRE_DIV3 | RCC_PLLSRC_HSI_Mul2;
+	FLASH->ACTLR = FLASH_ACTLR_LATENCY_0;
+	RCC->INTR  = 0x009F0000;
+
+	while((RCC->CTLR & RCC_PLLRDY) == 0);
+	RCC->CFGR0 = ( RCC->CFGR0 & ((uint32_t)~(RCC_SW))) | (uint32_t)RCC_SW_PLL;
+	while ((RCC->CFGR0 & (uint32_t)RCC_SWS) != (uint32_t)0x08);
 }
 
 void SetupUART( int uartBRR )
@@ -189,5 +202,4 @@ int _write(int fd, char *buf, int size)
 	}
 	return size;
 }
-
 
